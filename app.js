@@ -1,8 +1,18 @@
 const express = require("express");
 const session = require("express-session");
-const env = require("dotenv");
+const mongoose = require("mongoose");
 const app = express();
-env.config();
+
+require("dotenv").config();
+mongoose
+  .connect(process.env.MONGODBURL)
+  .then(() => {
+    console.log("Connected to MongoDB");
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+
 app.get("/", (req, res) => {
   res.end("welcome to the session demo.");
 });
