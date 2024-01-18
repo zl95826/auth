@@ -29,6 +29,7 @@ app.use(
     },
   })
 );
+app.use(express.static("public"));
 app.get("/", (req, res) => {
   //   req.session.userData = {
   //     userId: "123",
@@ -41,7 +42,8 @@ app.get("/", (req, res) => {
   // So, when checking your MongoDB collection for session data, it's helpful to perform actions in your
   // application that involve adding or modifying data in the session.
 
-  res.send("welcome to the session demo." + JSON.stringify(req.session));
+  // res.send("welcome to the session demo." + JSON.stringify(req.session));
+  res.sendFile("index.html", { root: "public" });
 });
 app.listen(3000, () => {
   console.log("test session");
