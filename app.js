@@ -29,12 +29,17 @@ app.use(
     },
   })
 );
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.get("/", (req, res) => {
   res.sendFile("index.html", { root: "public" });
 });
 app.get("/register", (req, res) => {
   res.sendFile("register.html", { root: "public" });
+});
+app.post("/register", (req, res) => {
+  console.log(req.body);
+  res.send("Register");
 });
 app.get("/log", (req, res) => {
   res.sendFile("log.html", { root: "public" });

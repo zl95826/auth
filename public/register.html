@@ -13,9 +13,27 @@
   </head>
   <body>
     <div class="container my-4 p-4 d-flex justify-content-between">
-      <button class="btn btn-success" id="button" type="button">
-        Register
-      </button>
+      <form action="/register" method="post">
+        <input
+          class="form-control mb-4"
+          placeholder="Name"
+          name="name"
+          type="text"
+        />
+        <input
+          class="form-control mb-4"
+          placeholder="Password"
+          name="password"
+          type="text"
+        />
+        <input
+          class="form-control mb-4"
+          placeholder="Email"
+          name="email"
+          type="email"
+        />
+        <button class="btn btn-success" type="submit">Register</button>
+      </form>
     </div>
   </body>
 </html>
