@@ -12,11 +12,26 @@
     />
   </head>
   <body>
-    <div class="container my-4 p-4 d-flex justify-content-between">
-      <button class="btn btn-success" id="button" type="button">
-        Register
+    <div class="container my-4 p-4 d-flex flex-column">
+      <a href="/register" class="btn btn-primary my-4"> Register </a>
+      <a href="log" class="btn btn-success my-4"> Log In </a>
+      <button class="btn btn-danger my-4" id="log" type="button">
+        Get JSON INFO, check the console
       </button>
-      <button class="btn btn-success" id="button" type="button">Log In</button>
     </div>
+    <script>
+      document.getElementById("log").addEventListener("click", () => {
+        fetch("/logs")
+          .then((response) => response.json())
+          // fetch expect json response, so in the API it has to use res.json()
+          // if you use res.sendFile(), it will throw an error
+          .then((data) => {
+            console.log(data);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    </script>
   </body>
 </html>
