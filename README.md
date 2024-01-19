@@ -3,17 +3,15 @@ app.get("/", (req, res) => {
 //userId: "123",
 //userName: "JohnDoe",
 //userType: "admin",
-};
+//};
+res.send("welcome to the session demo." + JSON.stringify(req.session));
 
+});
 If you comment out the userData, mySessions table would have no data, the reason is below:
 If you have an empty session object or there's no new data added to the session during a request,
 the session store may not initiate a storage operation(=may not save anything) because there's no new information to keep.
 So, when checking your MongoDB collection for session data, it's helpful to perform actions in your
 application that involve adding or modifying data in the session.
-
-res.send("welcome to the session demo." + JSON.stringify(req.session));
-
-});
 
 When you click a button in an HTML page and want to trigger an HTTP event, you typically use JavaScript to make an HTTP request to a server.
 The <b>fetch</b> function is a commonly used method in modern web development to make HTTP requests from the client-side (browser).
@@ -43,6 +41,9 @@ On the server side, you can use the express.urlencoded() middleware in Express t
 The express.json() middleware in Express is used to parse JSON-encoded request bodies.
 If your client sends data using the "application/json" content type, you should use express.json() to parse that data on the server side. For example:
 client-side:
+
+<pre>
+```javascript
 fetch('/api/data', {
 method: 'POST',
 headers: {
@@ -50,3 +51,5 @@ headers: {
 },
 body: JSON.stringify({ key: 'value' }),
 });
+```
+</pre>
