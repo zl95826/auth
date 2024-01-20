@@ -42,14 +42,12 @@ The express.json() middleware in Express is used to parse JSON-encoded request b
 If your client sends data using the "application/json" content type, you should use express.json() to parse that data on the server side. For example:
 client-side:
 
-<pre>
 ```javascript
-fetch('/api/data', {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json',
-},
-body: JSON.stringify({ key: 'value' }),
+fetch("/api/data", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ key: "value" }),
 });
 ```
-</pre>

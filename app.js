@@ -2,6 +2,8 @@ const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
 const mongoDBSession = require("connect-mongodb-session")(session);
+const User = require("./Models/User");
+const bcrypt = require("bcrypt");
 const app = express();
 require("dotenv").config();
 
@@ -37,9 +39,17 @@ app.get("/", (req, res) => {
 app.get("/register", (req, res) => {
   res.sendFile("register.html", { root: "public" });
 });
-app.post("/register", (req, res) => {
+app.post("/register", async (req, res) => {
   console.log(req.body);
-  res.send("Register");
+  const { username, password, email } = req.body;
+  let user = await User.findOne({ email });
+  if (user) {
+    return res.redirect("/register");
+  }
+  const hashedPsw = await bcrypt.hash(password, 12);
+  user = new User({ username, email, password: hashedPsw });
+  await user.save();
+  res.redirect("/log");
 });
 app.get("/log", (req, res) => {
   res.sendFile("log.html", { root: "public" });
