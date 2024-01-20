@@ -53,3 +53,17 @@ fetch("/api/data", {
   body: JSON.stringify({ key: "value" }),
 });
 ```
+
+### Here's why you need to explicitly navigate on the client-side when using fetch for form submission, even if the server redirects:
+
+<b>When you use > fetch:</b>
+
+1. <b>Client initiates request</b>: You're manually initiating an HTTP request from JavaScript using fetch.
+1. <b>Server responds</b>: The server processes the request and sends a response, which might include a redirect.
+1. <b>JavaScript handles response</b>: The fetch API returns a Promise that resolves with a Response object representing the server's response.
+1. <b>No automatic redirect/<b>: JavaScript doesn't automatically follow redirects like browsers do with form submissions. It's up to you to check for redirects and handle them within your JavaScript code.
+
+<b>Why this difference?</b>
+
+- <b>Form submission is a built-in browser behavior</b>: It comes with default handling for redirects, making web navigation seamless.
+- <b>fetch API is a lower-level tool</b>: It provides more control over HTTP requests but requires you to explicitly handle redirects and other response features.
