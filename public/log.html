@@ -13,7 +13,21 @@
   </head>
   <body>
     <div class="container my-4 p-4 d-flex justify-content-between">
-      <button class="btn btn-success" id="button" type="button">Log In</button>
+      <form action="/log" method="post">
+        <input
+          class="form-control mb-4"
+          placeholder="Email"
+          name="email"
+          type="email"
+        />
+        <input
+          class="form-control mb-4"
+          placeholder="Password"
+          name="password"
+          type="text"
+        />
+        <button class="btn btn-success" type="submit">Log in</button>
+      </form>
     </div>
   </body>
 </html>

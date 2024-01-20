@@ -13,7 +13,8 @@
   </head>
   <body>
     <div class="container my-4 p-4 d-flex justify-content-between">
-      <form action="/register" method="post">
+      <!-- <form action="/register" method="post" id="RForm"> -->
+      <form id="RForm">
         <input
           class="form-control mb-4"
           placeholder="Name"
@@ -34,6 +35,38 @@
         />
         <button class="btn btn-success" type="submit">Register</button>
       </form>
+      <div id="error-message" style="color: red"></div>
     </div>
+    <script>
+      const myform = document.getElementById("RForm");
+      myform.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(myform);
+        console.log(data); // you cannot use the data directly as req.body
+        // the content type of FormData is different with json and x-www-form-urlencoded
+        const obj = {};
+        for (const [key, value] of data) {
+          obj[key] = value;
+        }
+        console.log(obj);
+        try {
+          const response = await fetch("/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(obj),
+          });
+          if (!response.ok) {
+            const errorData = await response.json();
+            document.getElementById("error-message").innerHTML =
+              errorData.message || "Registration failed";
+            console.log(errorData);
+          } else {
+            window.location.href = "/log";
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    </script>
   </body>
 </html>

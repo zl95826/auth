@@ -32,6 +32,7 @@ app.use(
   })
 );
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static("public"));
 app.get("/", (req, res) => {
   res.sendFile("index.html", { root: "public" });
@@ -44,7 +45,7 @@ app.post("/register", async (req, res) => {
   const { username, password, email } = req.body;
   let user = await User.findOne({ email });
   if (user) {
-    return res.redirect("/register");
+    return res.status(400).json({ message: "Email alreay exists." });
   }
   const hashedPsw = await bcrypt.hash(password, 12);
   user = new User({ username, email, password: hashedPsw });
@@ -53,6 +54,9 @@ app.post("/register", async (req, res) => {
 });
 app.get("/log", (req, res) => {
   res.sendFile("log.html", { root: "public" });
+});
+app.post("/log", (req, res) => {
+  res.redirect("/");
 });
 app.get("/logs", (req, res) => {
   res.json({ text: "Hello World" });
