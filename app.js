@@ -59,11 +59,16 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
   console.log(req.body);
   const user = await User.findOne({ email });
+  console.log(user);
   if (!user) {
     const errorMessage = "No such account existing, please register first.";
     return res.redirect(`/login?error=${errorMessage}`);
   }
-  res.redirect("/");
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.redirect("login");
+  }
+  res.json({ text: "log in successfully" });
 });
 app.get("/logs", (req, res) => {
   res.json({ text: "Hello World" });
