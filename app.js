@@ -53,6 +53,9 @@ app.post("/register", async (req, res) => {
   res.redirect("/log");
 });
 app.get("/login", (req, res) => {
+  //   if (req.session.isAuth) {
+  //     return res.redirect("/dashboard");
+  //   }// it works
   res.sendFile("log.html", { root: "public" });
 });
 app.post("/login", async (req, res) => {
