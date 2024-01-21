@@ -66,9 +66,18 @@ app.post("/login", async (req, res) => {
   }
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    return res.redirect("login");
+    const errorMessage = "Password doesn't match.";
+    return res.redirect(`/login?error=${errorMessage}`);
   }
-  res.json({ text: "log in successfully" });
+  req.session.isAuth = true;
+  res.redirect("/dashboard");
+});
+const isAuth = (req, res, next) => {
+  //a middleware to prevent visit without authentication to access the dashboard page
+  req.session.isAuth ? next() : res.redirect("/login");
+};
+app.get("/dashboard", isAuth, (req, res) => {
+  res.sendFile("dashboard.html", { root: "public" });
 });
 app.get("/logs", (req, res) => {
   res.json({ text: "Hello World" });
