@@ -79,6 +79,12 @@ const isAuth = (req, res, next) => {
 app.get("/dashboard", isAuth, (req, res) => {
   res.sendFile("dashboard.html", { root: "public" });
 });
+app.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) throw err;
+    res.redirect("/");
+  });
+});
 app.get("/logs", (req, res) => {
   res.json({ text: "Hello World" });
 });

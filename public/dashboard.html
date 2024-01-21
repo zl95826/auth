@@ -14,9 +14,9 @@
   <body>
     <div class="container my-4 p-4 d-flex flex-column">
       <h1>Welcome You Are Authenticated.</h1>
-      <button class="btn btn-danger my-4" id="logout" type="button">
-        Log out
-      </button>
+      <form action="/logout" method="post" class="w-100">
+        <button class="btn btn-danger my-4" type="submit">Log out</button>
+      </form>
     </div>
   </body>
 </html>
