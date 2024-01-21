@@ -12,8 +12,9 @@
     />
   </head>
   <body>
-    <div class="container my-4 p-4 d-flex justify-content-between">
-      <form action="/log" method="post">
+    <div class="container my-4 p-4 d-flex flex-column">
+      <div id="error-message" class="text-danger mb-4"></div>
+      <form action="/login" method="post" class="w-100">
         <input
           class="form-control mb-4"
           placeholder="Email"
@@ -26,8 +27,26 @@
           name="password"
           type="text"
         />
-        <button class="btn btn-success" type="submit">Log in</button>
+        <div class="d-flex">
+          <button class="btn btn-success" type="submit">Log in</button>
+          <a href="/register" class="btn btn-primary mx-4" id="register-link">
+            Register
+          </a>
+        </div>
       </form>
     </div>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get("error");
+        console.log(error);
+        if (error) {
+          document.getElementById("error-message").innerHTML = error;
+          document.getElementById("register-link").style.display = "block";
+        } else {
+          document.getElementById("register-link").style.display = "none";
+        }
+      });
+    </script>
   </body>
 </html>

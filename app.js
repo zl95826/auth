@@ -52,10 +52,17 @@ app.post("/register", async (req, res) => {
   await user.save();
   res.redirect("/log");
 });
-app.get("/log", (req, res) => {
+app.get("/login", (req, res) => {
   res.sendFile("log.html", { root: "public" });
 });
-app.post("/log", (req, res) => {
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  console.log(req.body);
+  const user = await User.findOne({ email });
+  if (!user) {
+    const errorMessage = "No such account existing, please register first.";
+    return res.redirect(`/login?error=${errorMessage}`);
+  }
   res.redirect("/");
 });
 app.get("/logs", (req, res) => {
