@@ -33,8 +33,17 @@ app.use(
 );
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static("public"));
+//app.use(express.static("public"));
+app.use((req, res, next) => {
+  console.log("Middleware Log:", req.session); // Log session before the route handler
+  next();
+});
 app.get("/", (req, res) => {
+  console.log("Session:");
+  if (req.session.isAuth) {
+    console.log(req.session);
+    return res.redirect("/dashboard");
+  }
   res.sendFile("index.html", { root: "public" });
 });
 app.get("/register", (req, res) => {
@@ -53,16 +62,14 @@ app.post("/register", async (req, res) => {
   res.redirect("/log");
 });
 app.get("/login", (req, res) => {
-  //   if (req.session.isAuth) {
-  //     return res.redirect("/dashboard");
-  //   }// it works
+  if (req.session.isAuth) {
+    return res.redirect("/dashboard");
+  } // it works
   res.sendFile("log.html", { root: "public" });
 });
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
   const user = await User.findOne({ email });
-  console.log(user);
   if (!user) {
     const errorMessage = "No such account existing, please register first.";
     return res.redirect(`/login?error=${errorMessage}`);
@@ -93,6 +100,10 @@ app.get("/logs", (req, res) => {
 });
 app.use((req, res, next) => {
   res.status(404).send("404 errors");
+});
+app.use((err, req, res, next) => {
+  console.log(err);
+  res.status(500).send("error happens");
 });
 app.listen(3000, () => {
   console.log("test session");

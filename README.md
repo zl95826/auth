@@ -72,3 +72,33 @@ fetch("/api/data", {
 
 - Choose fetch for fine-grained control over requests and responses, but remember to handle redirects manually.
 - Use form submission for simpler scenarios where the browser's default behavior is sufficient.
+
+### With the express.static middleware, you can serve these static files (like HTML, CSS, JavaScript, images, etc.) directly from the "public" directory without explicit route handlers.</b>
+
+```iavascript
+// Serve static files from the "public" directory
+app.use(express.static("public"));
+```
+
+With this setup, when you visit http://localhost:3000/, it will automatically serve the "index.html" file from the "public" directory due to the express.static middleware.
+
+In your code, if <b>express.static("public")</b> comes before the <b> app.get("/", ...) route handler</b>.
+This means:
+
+- When you request /, Express first checks for matching static files.
+- It finds index.html in the "public" directory, which matches the root path.
+- Therefore, it serves index.html without even reaching your route handler.
+
+```iavascript
+app.use(express.static("public"));
+app.get("/", (req, res) => {
+  console.log("Session:");
+  if (req.session.isAuth) {
+    console.log(req.session);
+    return res.redirect("/dashboard");
+  }
+  res.sendFile("index.html", { root: "public" });
+});
+```
+
+That's the reason that the Session never have a change to be consoled out.
