@@ -17,8 +17,8 @@
       <form id="RForm" class="w-100">
         <input
           class="form-control mb-4"
-          placeholder="Name"
-          name="name"
+          placeholder="Username"
+          name="username"
           type="text"
         />
         <input
@@ -60,7 +60,7 @@
             document.getElementById("error-message").innerHTML =
               errorData.message || "Registration failed";
           } else {
-            window.location.href = "/log";
+            window.location.href = "/login";
           }
         } catch (error) {
           console.log(error);

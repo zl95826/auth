@@ -102,3 +102,13 @@ app.get("/", (req, res) => {
 ```
 
 That's the reason that the Session never have a change to be consoled out.
+
+The maxAge option in your session configuration only affects the cookie's lifespan, not the session data in the store.
+If a session is not explicitly destroyed, its data might remain in the store even after the cookie expires.
+You log the req.session object. This doesn't necessarily mean that the session is still valid;
+it might have been recreated if it expired.
+
+connect.sid is a session ID used in Express.js applications with the express-session middleware.
+It is a value stored in a browser cookie named connect.sid that identifies a user's session with your server.
+
+express-session is a package that enables session persistence,which allows us to save a cookie on the user's browser and the next time they try to access our website, we check that cookie and make sure that we can bypass that whole login process.

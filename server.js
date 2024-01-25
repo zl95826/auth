@@ -18,7 +18,7 @@ mongoose
 const sessionStore = new mongoDBSession({
   uri: process.env.MONGODBURL,
   databaseName: "Auth",
-  collection: "mySessions",
+  collection: "passportSessions",
 });
 app.use(
   session({
@@ -33,54 +33,22 @@ app.use(
 );
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-//app.use(express.static("public"));
-app.use((req, res, next) => {
-  console.log("Middleware Log:", req.session); // Log session before the route handler
-  next();
-});
+
 app.get("/", (req, res) => {
-  console.log("Session:");
-  if (req.session.isAuth) {
-    console.log(req.session);
-    return res.redirect("/dashboard");
-  }
+  console.log("Session:", req.session);
   res.sendFile("index.html", { root: "public" });
 });
 app.get("/register", (req, res) => {
   res.sendFile("register.html", { root: "public" });
 });
 app.post("/register", async (req, res) => {
-  console.log(req.body);
-  const { username, password, email } = req.body;
-  let user = await User.findOne({ email });
-  if (user) {
-    return res.status(400).json({ message: "Email alreay exists." });
-  }
-  const hashedPsw = await bcrypt.hash(password, 12);
-  user = new User({ username, email, password: hashedPsw });
-  await user.save();
-  res.redirect("/login");
+  res.json({ text: "working" });
 });
 app.get("/login", (req, res) => {
-  if (req.session.isAuth) {
-    return res.redirect("/dashboard");
-  }
   res.sendFile("login.html", { root: "public" });
 });
 app.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) {
-    const errorMessage = "No such account existing, please register first.";
-    return res.redirect(`/login?error=${errorMessage}`);
-  }
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    const errorMessage = "Password doesn't match.";
-    return res.redirect(`/login?error=${errorMessage}`);
-  }
-  req.session.isAuth = true;
-  res.redirect("/dashboard");
+  res.json({ text: "working" });
 });
 const isAuth = (req, res, next) => {
   //a middleware to prevent visit without authentication to access the dashboard page
