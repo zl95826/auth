@@ -21,8 +21,8 @@ mongoose
 app.use(
   session({
     secret: process.env.SECRET, //secret is used to sign the session cookie
-    resave: false,
-    saveUninitialized: false,
+    resave: false, // don't save session if unmodified
+    saveUninitialized: false, // don't create session until something stored
     cookie: {
       maxAge: 1000 * 60 * 5,
     },
@@ -52,6 +52,17 @@ passport.use(new LocalStrategy(authUser));
 // Use Passport to define the Authentication Strategy
 // The "authUser" is a function that we will define later will contain the steps
 // to authenticate a user, and will return the "authenticated user".
+passport.serializeUser((userObj, done) => {
+  console.log(`--------> Serialize User`);
+  console.log(userObj);
+  done(null, userObj);
+});
+passport.deserializeUser((obj, done) => {
+  console.log("---------> Deserialize Id");
+  console.log(obj);
+
+  done(null, obj);
+});
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -79,15 +90,24 @@ app.post(
 // If you were using google or facebook to authenticate,
 // it would say ‘google’ or ‘facebook’ instead of ‘local’.
 const isAuth = (req, res, next) => {
-  //a middleware to prevent visit without authentication to access the dashboard page
-  req.session.isAuth ? next() : res.redirect("/login");
+  // Use the “req.isAuthenticated()” function to protect logged in routes
+  // Passport JS conveniently provides a “req.isAuthenticated()” function, that
+  // returns “true” in case an authenticated user is present in
+  // “req.session.passport.user”, or
+  // returns “false” in case no authenticated user is present in
+  // “req.session.passport.user”.
+  if (req.isAuthenticated()) return next();
+  res.redirect("/login");
 };
 app.get("/dashboard", isAuth, (req, res) => {
   res.sendFile("dashboard.html", { root: "public" });
 });
 app.post("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (err) throw err;
+  // Passport JS also conveniently provides us with a “req.logOut()” function,
+  // which when called clears the “req.session.passport” object and
+  // removes any attached params.
+  req.logOut((err) => {
+    if (err) return next(err);
     res.redirect("/");
   });
 });

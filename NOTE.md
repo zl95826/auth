@@ -21,7 +21,7 @@ authUser = (user, password, done) => {
 };
 ```
 
-The “done()” function is then used to pass the “{authenticated_user}” to the serializeUser() function. Note, the done(<err>, <user>) function in the “authUser” is passed as ,
+The “done()” function is then used to pass the “{authenticated_user}” to the serializeUser() function. Note, the done(<err>, <user>) function in the “authUser” is passed as,
 
 1. If the user not found in DB, <b>done (null, false)</b>
 1. If the user found in DB, but password does not match, <b>done (null, false)</b>
@@ -35,3 +35,27 @@ The “done()” function is then used to pass the “{authenticated_user}” to
   done ( <no error> so null, <pass authenticated user to serializeUser()>)
 
 https://medium.com/@prashantramnyc/node-js-with-passport-authentication-simplified-76ca65ee91e5
+
+```javascript
+passport.use(new LocalStrategy(authUser));
+```
+
+In this line, you are configuring Passport to use the LocalStrategy for authentication, and you're providing the authUser function as the callback that will be invoked during the authentication process.
+
+```javascript
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login",
+  })
+);
+```
+
+When a POST request is made to the "/login" endpoint, Passport triggers the authentication process using the <b>LocalStrategy</b>. The <b>authUser</b> function is called during this process to verify the user's credentials.
+
+- If authentication is successful, the user is redirected to "/dashboard" <b>(successRedirect).</b>
+- f authentication fails, the user is redirected back to "/login" <b>(failureRedirect).</b>
+
+1. Session Serialization: When a user logs in, you typically want to store some identifier (like user ID) in the session to uniquely identify the user. serializeUser defines how this user identifier is stored.
+1. Session Deserialization: When a user makes subsequent requests, the stored user identifier in the session needs to be used to fetch the user's full information (e.g., from a database). deserializeUser defines how this retrieval process is done.
