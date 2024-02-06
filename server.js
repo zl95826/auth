@@ -1,7 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 const mongoose = require("mongoose");
-
+const mongoDBSession = require("connect-mongodb-session")(session);
 const User = require("./Models/User");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
@@ -17,12 +17,17 @@ mongoose
   .catch((error) => {
     console.log(error);
   });
-
+const sessionStore = new mongoDBSession({
+  uri: process.env.MONGODBURL,
+  databaseName: "Auth",
+  collection: "passportSessions",
+});
 app.use(
   session({
     secret: process.env.SECRET, //secret is used to sign the session cookie
     resave: false, // don't save session if unmodified
     saveUninitialized: false, // don't create session until something stored
+    store: sessionStore,
     cookie: {
       maxAge: 1000 * 60 * 5,
     },
@@ -31,9 +36,10 @@ app.use(
 // "express-session" creates a "req.session" object,
 // when it is invoked via app.use(session({..}))
 const authUser = async (username, password, done) => {
-  console.log(username, password);
+  console.log(username, password, "llllll");
   try {
     const auth_user = await User.findOne({ email: username });
+    console.log(auth_user, "auth func");
     if (!auth_user) return done(null, false, { message: "wrong email" });
     else {
       const isMatch = await bcrypt.compare(password, auth_user.password);
@@ -54,14 +60,20 @@ passport.use(new LocalStrategy(authUser));
 // to authenticate a user, and will return the "authenticated user".
 passport.serializeUser((userObj, done) => {
   console.log(`--------> Serialize User`);
-  console.log(userObj);
-  done(null, userObj);
+  console.log(userObj._id);
+  done(null, userObj._id);
 });
-passport.deserializeUser((obj, done) => {
+passport.deserializeUser((id, done) => {
   console.log("---------> Deserialize Id");
-  console.log(obj);
-
-  done(null, obj);
+  console.log(id);
+  User.findById(id)
+    .exec()
+    .then((user) => {
+      done(null, user);
+    })
+    .catch((err) => {
+      done(err, null);
+    });
 });
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -106,7 +118,7 @@ app.post("/logout", (req, res) => {
   // Passport JS also conveniently provides us with a “req.logOut()” function,
   // which when called clears the “req.session.passport” object and
   // removes any attached params.
-  req.logOut((err) => {
+  req.logout((err) => {
     if (err) return next(err);
     res.redirect("/");
   });
@@ -118,7 +130,7 @@ app.use((req, res, next) => {
   res.status(404).send("404 errors");
 });
 app.use((err, req, res, next) => {
-  console.log(err);
+  console.log("error", err);
   res.status(500).send("error happens");
 });
 app.listen(3000, () => {

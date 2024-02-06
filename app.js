@@ -41,7 +41,7 @@ app.use((req, res, next) => {
 app.get("/", (req, res) => {
   console.log("Session:");
   if (req.session.isAuth) {
-    console.log(req.session);
+    // console.log(req.session);
     return res.redirect("/dashboard");
   }
   res.sendFile("index.html", { root: "public" });
@@ -50,7 +50,7 @@ app.get("/register", (req, res) => {
   res.sendFile("register.html", { root: "public" });
 });
 app.post("/register", async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const { username, password, email } = req.body;
   let user = await User.findOne({ email });
   if (user) {
@@ -102,7 +102,7 @@ app.use((req, res, next) => {
   res.status(404).send("404 errors");
 });
 app.use((err, req, res, next) => {
-  console.log(err);
+  //console.log(err);
   res.status(500).send("error happens");
 });
 app.listen(3000, () => {
