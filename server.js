@@ -142,6 +142,13 @@ const isAuth = (req, res, next) => {
   next();
 };
 app.get("/dashboard", isAuth, (req, res) => {
+  req.session.cart = 20;
+  req.session.save((err) => {
+    if (err) {
+      console.error("Session save error:", err);
+      return res.status(500).send("Server error.");
+    }
+  });
   res.sendFile("dashboard.html", { root: "public" });
 });
 
