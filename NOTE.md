@@ -59,3 +59,7 @@ When a POST request is made to the "/login" endpoint, Passport triggers the auth
 
 1. Session Serialization: When a user logs in, you typically want to store some identifier (like user ID) in the session to uniquely identify the user. serializeUser defines how this user identifier is stored.
 1. Session Deserialization: When a user makes subsequent requests, the stored user identifier in the session needs to be used to fetch the user's full information (e.g., from a database). deserializeUser defines how this retrieval process is done.
+
+In register.html:
+JavaScript on your registration page is handling the form submission and redirection. Specifically, the line window.location.href = "/login" in your JavaScript code is instructing the browser to navigate to the /login page immediately after the form submission is processed, regardless of the server's response or any redirection logic you might have in your Node.js server code.
+To address this and allow server-side redirection to take precedence, you should modify the JavaScript to check the server's response and only redirect to /login if the registration was not successful. If the registration is successful and the server redirects to another page (like /dashboard), the JavaScript should not override this redirection.

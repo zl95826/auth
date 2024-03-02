@@ -36,10 +36,9 @@ app.use(
 // "express-session" creates a "req.session" object,
 // when it is invoked via app.use(session({..}))
 const authUser = async (username, password, done) => {
-  console.log(username, password, "llllll");
   try {
     const auth_user = await User.findOne({ email: username });
-    console.log(auth_user, "auth func");
+
     if (!auth_user) return done(null, false, { message: "wrong email" });
     else {
       const isMatch = await bcrypt.compare(password, auth_user.password);
@@ -47,7 +46,6 @@ const authUser = async (username, password, done) => {
       else return done(null, false, { message: "wrong password" });
     }
   } catch (error) {
-    console.log(error);
     return done(error);
   }
 };
@@ -60,12 +58,11 @@ passport.use(new LocalStrategy(authUser));
 // to authenticate a user, and will return the "authenticated user".
 passport.serializeUser((userObj, done) => {
   console.log(`--------> Serialize User`);
-  console.log(userObj._id);
+  console.log(userObj, userObj._id);
   done(null, userObj._id);
 });
 passport.deserializeUser((id, done) => {
   console.log("---------> Deserialize Id");
-  console.log(id);
   User.findById(id)
     .exec()
     .then((user) => {
@@ -79,14 +76,45 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  console.log("Session:", req.session);
-  res.sendFile("index.html", { root: "public" });
+  if (req.isAuthenticated()) {
+    res.sendFile("dashboard.html", { root: "public" });
+  } else res.sendFile("index.html", { root: "public" });
 });
 app.get("/register", (req, res) => {
   res.sendFile("register.html", { root: "public" });
 });
 app.post("/register", async (req, res) => {
-  res.json({ text: "working" });
+  const { username, password, email } = req.body;
+  try {
+    let user = await User.findOne({ email });
+    if (user) {
+      return res
+        .status(400)
+        .json({ message: "Email alreay exists. Try logging in" });
+    } else {
+      bcrypt.hash(password, saltRounds, async (err, hash) => {
+        if (err) {
+          console.error("Error hashing password:", err);
+        } else {
+          console.log("Hashed Passord:", hash);
+          let new_user = new User({ username, email, password: hash });
+          const result = await new_user.save();
+          console.log("register", result);
+
+          req.login(result, (err) => {
+            if (err) {
+              console.error("Error during login after registration:", err);
+              res.redirect("/register");
+            } else {
+              res.redirect("/dashboard");
+            }
+          });
+        }
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
 });
 app.get("/login", (req, res) => {
   res.sendFile("login-passport.html", { root: "public" });
@@ -108,12 +136,15 @@ const isAuth = (req, res, next) => {
   // “req.session.passport.user”, or
   // returns “false” in case no authenticated user is present in
   // “req.session.passport.user”.
-  if (req.isAuthenticated()) return next();
-  res.redirect("/login");
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login");
+  }
+  next();
 };
 app.get("/dashboard", isAuth, (req, res) => {
   res.sendFile("dashboard.html", { root: "public" });
 });
+
 app.post("/logout", (req, res) => {
   // Passport JS also conveniently provides us with a “req.logOut()” function,
   // which when called clears the “req.session.passport” object and

@@ -60,7 +60,15 @@
             document.getElementById("error-message").innerHTML =
               errorData.message || "Registration failed";
           } else {
-            window.location.href = "/login";
+            // If registration is successful, rely on the server's response for redirection
+            // The server might redirect to /dashboard or another page as part of the response to the fetch request
+            // If the server response includes a redirection, let the browser follow it
+            if (response.redirected) {
+              window.location.href = response.url;
+            } else {
+              window.location.href = "/login";
+              //// If there's no redirection, then manually redirect to /login or another page as needed
+            }
           }
         } catch (error) {
           console.log(error);
