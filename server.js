@@ -81,7 +81,7 @@ app.get("/", (req, res) => {
   } else res.sendFile("index.html", { root: "public" });
 });
 app.get("/register", (req, res) => {
-  res.sendFile("register.html", { root: "public" });
+  res.sendFile("register-passport.html", { root: "public" });
 });
 app.post("/register", async (req, res) => {
   const { username, password, email } = req.body;
